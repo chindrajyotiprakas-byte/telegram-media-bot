@@ -1,0 +1,7 @@
+pyrogram
+tgcrypto
+cloudscraper
+beautifulsoup4
+requests
+aiohttp
+python-dotenv
