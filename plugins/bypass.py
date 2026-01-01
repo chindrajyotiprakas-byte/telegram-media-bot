@@ -1,9 +1,5 @@
 from pyrogram import Client, filters
-import cloudscraper
-import time
-
-# Initialize scraper to handle Cloudflare protections
-scraper = cloudscraper.create_scraper()
+from plugins.bypass_v2 import bypasser
 
 @Client.on_message(filters.text & filters.regex(r'^https?://') & ~filters.command('start'))
 async def bypass_link(client, message):
@@ -11,13 +7,9 @@ async def bypass_link(client, message):
     status_msg = await message.reply_text("🔎 **Checking Link...**")
     
     try:
-        # Request with cloudscraper
-        # timeout is important to not hang the bot
-        response = scraper.get(url, allow_redirects=True, timeout=15)
+        final_url = bypasser.bypass_url(url)
         
-        final_url = response.url
-        
-        if final_url != url:
+        if final_url and final_url != url:
             await status_msg.edit_text(
                 f"✅ **Bypassed / Resolved**\n\n"
                 f"**Original:** {url}\n"
@@ -26,9 +18,9 @@ async def bypass_link(client, message):
             )
         else:
              await status_msg.edit_text(
-                f"ℹ️ **Direct Link**\n\n"
+                f"ℹ️ **Direct Link / Failed**\n\n"
                 f"The link appears to be direct or I couldn't bypass it.\n"
-                f"{final_url}",
+                f"{final_url if final_url else url}",
                 disable_web_page_preview=True
             )
             
